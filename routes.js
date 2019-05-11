@@ -5,7 +5,7 @@ const { check, validationResult } = require('express-validator/check');
 
 // This array is used to keep track of user records
 // as they are created.
-const users = [];
+
 
 // Construct a router instance.
 const router = express.Router();
@@ -34,7 +34,6 @@ router.post('/users', [
     .isLength({ min: 8, max: 20 })
     .withMessage('Please provide a value for "password" that is between 8 and 20 characters in length'),
   check('passwordConfirmation')
-    .exists({ checkNull: true, checkFalsy: true })
     .withMessage('Please provide a value for "passwordConfirmation"')
     .custom((value, { req }) => {
       // Only attempt to compare the `password` and `passwordConfirmation`
