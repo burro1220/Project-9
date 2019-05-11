@@ -23,8 +23,8 @@ app.use(morgan('dev'));
 
 // TODO setup your api routes here
 app.use('/api', routes);
-app.use('/api/courses', courseRoutes);
-app.use('/api/user', userRoutes);
+//app.use('/api/courses', courseRoutes);
+//app.use('/api/user', userRoutes);
 
 // setup a friendly greeting for the root route
 app.get('/', (req, res) => {
