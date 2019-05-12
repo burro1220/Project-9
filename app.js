@@ -69,7 +69,7 @@ sequelize
       const port = process.env.PORT || 6000;
 
       // start listening on our port
-      app.listen(app.get('port'), () => {
+      app.listen(port, () => {
         console.log(`Express server is listening on port ${port}`);
       });
     });
