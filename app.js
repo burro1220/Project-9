@@ -7,8 +7,8 @@ const sequelize = require('./models').sequelize;
 
 // Routes
 const routes = require('./routes/index');
-const courseRoutes = require('./routes/course');
-const userRoutes = require('./routes/user')
+//const courseRoutes = require('./routes/courses');
+const userRoutes = require('./routes/users')
 // variable to enable global error logging
 const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
 
