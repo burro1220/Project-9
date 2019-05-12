@@ -4,5 +4,5 @@ const User = require("../models").User;
 const Sequelize = require("sequelize");
 
 router.get('/', (req, res) => {
-    console.log(req)
+   // console.log(res)
     })

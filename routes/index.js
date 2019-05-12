@@ -1,9 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-/**
- * @GET Returns the currently authenticated user
- */
+// Redirect to /api/users
 router.get("/", (req, res) => {
   res.redirect("/api/users");
 });
