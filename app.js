@@ -4,6 +4,9 @@
 const express = require('express');
 const morgan = require('morgan');
 const sequelize = require('./models').sequelize;
+// set our port
+const port = process.env.PORT || 6000;
+
 
 // Routes
 const routes = require('./routes/index');
@@ -59,26 +62,10 @@ sequelize
     console.log('Connection has been established successfully.')
   })
   .then(() => {
-    console.log('Syncing database with models');
-    sequelize.sync({ force: true })
-    .then(() => {
-      console.log(`Database & tables created!`)
-    })
-    .then(() => {
-      // set our port
-      const port = process.env.PORT || 6000;
-
-      // start listening on our port
-      app.listen(port, () => {
-        console.log(`Express server is listening on port ${port}`);
-      });
+    app.listen(port, () => {
+      console.log(`Express server is listening on port ${port}`)
     });
-  })
-  .catch(err => {
-    console.error('Unable to connect to the database:', err);
   });
-
-
 
 
 

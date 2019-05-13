@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const User = require("../models").User;
-const { sequelize } = require("../models");
+const authenticate = require('./login');
 
 
 //GET current authorized User
-router.get("/", (req, res) => {
+router.get("/", authenticate, (req, res) => {
+    console.log(req.body);
     res.json({
       id: req.currentUser.id,
       firstName: req.currentUser.emailAddress,
@@ -16,8 +17,8 @@ router.get("/", (req, res) => {
 });
 
 // POST Create User
-router.post("/users", (req, res, next) => {
-    const { info } = req;
+router.post("/", (req, res, next) => {
+    const info = req.body;
     User.findOne({ where: { emailAddress: info.emailAddress }})
         .then( email => {
             if (email) {
