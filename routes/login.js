@@ -11,44 +11,58 @@ const User = require('../models').User;
  * @param {Function} next - The function to call to pass execution to the next middleware.
  */
 module.exports = (req, res, next) => {
+
+    //Create placeholder for errors
     let message = null;
-  
-    // Get the user's credentials from the Authorization header.
+
+    //Grab credentials from Auth header
     const credentials = auth(req);
-  
+
+    //If credentials exist...
     if (credentials) {
-      //console.log(User);
-        // Look for a user whose `username` matches the credentials `name` property.
-      User.findOne({
-          where: {
-              emailAddress: credentials.name
-          }
-      }).then(user => {
-          console.log(user);
-      })
-  
-      if (user) {
-        const authenticated = bcryptjs
-          .compareSync(credentials.pass, user.password);
-        if (authenticated) {
-          console.log(`Authentication successful for username: ${user.username}`);
-  
-          // Store the user on the Request object.
-          req.currentUser = user;
-        } else {
-          message = `Authentication failure for username: ${user.username}`;
-        }
-      } else {
-        message = `User not found for username: ${credentials.name}`;
-      }
-    } else {
-      message = 'Auth header not found';
+        console.log(credentials.name);
+        //Query the DB for User with matching email address
+        User.findOne({
+            where: {
+                emailAddress: credentials.name
+            }
+        }).then(user => {
+            //If matching email found
+            if (user) {
+
+                //Check password
+                const authenticated = bcryptjs.compareSync( credentials.pass, user.password );
+
+                //If password matches
+                if(authenticated) {
+
+                    //Store User in request
+                    req.currentUser = user;
+
+                    //Advance to next middleware
+                    next();
+
+                } else {
+                    //If password doesn't match
+                    message= "That password does not match our records";
+
+                    //Set status code
+                    res.status(401);
+
+                    //Send message
+                    res.json({ message: message });
+                }
+
+            } else {
+                //If no matching email address
+                message= "We could not find that email address in our system. Please try again.";
+
+                //Set status code
+                res.status(401);
+
+                //Send message
+                res.json({ message: message });
+            }
+        });
     }
-  
-    if (message) {
-      console.warn(message);
-      res.status(401).json({ message: 'Access Denied' });
-    } else {
-      next();
-    }
-  };
+};

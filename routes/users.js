@@ -6,7 +6,7 @@ const authenticate = require('./login');
 
 //GET current authorized User
 router.get("/", authenticate, (req, res) => {
-    console.log(req.body);
+    console.log(req);
     res.json({
       id: req.currentUser.id,
       firstName: req.currentUser.emailAddress,
