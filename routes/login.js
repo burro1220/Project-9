@@ -32,8 +32,8 @@ module.exports = (req, res, next) => {
                 console.log(`user = ${user}, password = ${user.password}`);
 
                 //Check password
-                const authenticated = bcryptjs.compareSync( credentials.pass, user.password );
-                console.log(`credentials ${credentials.pass}, ${user.password} `)
+                let authenticated = bcryptjs.compareSync(credentials.pass, user.password);
+                console.log(authenticated)
 
                 //If password matches
                 if(authenticated) {

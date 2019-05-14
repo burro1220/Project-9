@@ -10,8 +10,9 @@ const port = process.env.PORT || 6000;
 
 // Routes
 const routes = require('./routes/index');
-//const courseRoutes = require('./routes/courses');
+const courseRoutes = require('./routes/courses');
 const userRoutes = require('./routes/users')
+
 // variable to enable global error logging
 const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
 
@@ -26,7 +27,7 @@ app.use(morgan('dev'));
 
 // TODO setup your api routes here
 app.use('/api', routes);
-//app.use('/api/courses', courseRoutes);
+app.use('/api/courses', courseRoutes);
 app.use('/api/users', userRoutes);
 
 // setup a friendly greeting for the root route
