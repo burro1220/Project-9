@@ -10,7 +10,9 @@ router.get('/', (req, res) => {
 
 // POST Create User
 router.post("/", (req, res, next) => {
+    console.log(req.body)
     const info = req.body;
+    
     Course.findOne({ where: { title: info.title }})
         .then( title => {
             if (title) {
@@ -27,6 +29,7 @@ router.post("/", (req, res, next) => {
             //Create Course
             Course.create(newCourseInfo)
             .then(() => {
+                console.log("Your course has been created");
                 res.status(201).end();
             })
             //Catch error and check if Sequelize validation  error (not using) and pass error to next middleware
