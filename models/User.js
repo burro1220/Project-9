@@ -54,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
 
   User.associate = (models) => {
     // TODO Add associations.
-    User.hasMany(models.Course);    
+    User.hasMany(models.Course, { foreignKey: "userId" });    
   };
 
   return User;

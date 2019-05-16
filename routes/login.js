@@ -20,7 +20,7 @@ module.exports = (req, res, next) => {
 
     //If credentials exist...
     if (credentials) {
-        console.log(credentials.name);
+       
         //Query the DB for User with matching email address
         User.findOne({
             where: {
@@ -29,11 +29,11 @@ module.exports = (req, res, next) => {
         }).then(user => {
             //If matching email found
             if (user) {
-                console.log(`user = ${user}, password = ${user.password}`);
+                
 
                 //Check password
                 let authenticated = bcryptjs.compareSync(credentials.pass, user.password);
-                console.log(authenticated)
+                
 
                 //If password matches
                 if(authenticated) {
