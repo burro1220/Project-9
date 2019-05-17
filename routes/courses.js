@@ -100,8 +100,7 @@ router.put('/:id', authenticate, (req, res, next) => {
 
     //Grab info from request
     const info = req.body; 
-    console.log(info);
-    
+        
     //Filter for Course by ID
     Course.findOne({ where: {
         id: info.id
@@ -110,7 +109,7 @@ router.put('/:id', authenticate, (req, res, next) => {
         if (course) {
             
             //Update Course
-            Course.update(info);
+            course.update(info);
 
         } else {
             
@@ -137,6 +136,45 @@ router.put('/:id', authenticate, (req, res, next) => {
     })
 });
 
+//Delete a Course
+router.delete('/:id', authenticate, (res, req, next) => {
 
+    //Grab info from request
+    const info = req.body; 
+     console.log(info)  ;
+    //Filter for Course by ID
+    Course.findOne({ where: {
+        id: info.id
+    }})
+    .then ( course => {
+        if (course) {
+            
+            //Update Course
+            course.destroy();
+
+        } else {
+            
+            //Send error
+            err.status(400);
+            res.json({ error: "We can not find a Course by that ID" })
+            next(err);
+        }
+    })
+    .then( () => {
+        
+        //On Success
+        console.log("Your course has been deleted");
+        res.status(204).end();
+    })
+    .catch(err => {
+        if (err.name === "SequelizeValidationError") {
+            err.message = "All data must be entered";
+            err.status = 400;
+        } else {
+            err.status = 400;
+            next(err);
+        } 
+    })
+});
 
 module.exports = router;
