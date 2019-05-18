@@ -5,7 +5,7 @@ const express = require('express');
 const morgan = require('morgan');
 const sequelize = require('./models').sequelize;
 // set our port
-const port = process.env.PORT || 6000;
+const port = process.env.PORT || 5000;
 
 
 // Routes

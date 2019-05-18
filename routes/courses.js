@@ -137,7 +137,7 @@ router.put('/:id', authenticate, (req, res, next) => {
 });
 
 //Delete a Course
-router.delete('/:id', authenticate, (res, req, next) => {
+router.delete('/:id', authenticate, (req, res, next) => {
 
     //Grab info from request
     const info = req.body; 
