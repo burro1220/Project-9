@@ -39,27 +39,43 @@ router.post("/", (req, res, next) => {
                 next(err);
 
             } else {
-                                
-            //Hash Password
-            info.password = bcryptjs.hashSync(info.password);                
 
-            //Create user
-            User.create(info)
-            .then(() => {
-                res.status(201).end();
-            })
-            //Catch error and check if Sequelize validation  error (not using) and pass error to next middleware
-            .catch (err => {
-                if (err.name === "SequelizeValidationError") {
-                    err.message = "All data must be entered";
-                    err.status = 400;
-                } else {
+                //Check email validation
+                function validateEmail(email) {
+                    const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                    return regex.test(String(email).toLowerCase());
+                }
+
+                //If validation fails
+                if(!validateEmail(email)) {
+                    const err = new Error('Pleasae enter a valid email address');
                     err.status = 400;
                     next(err);
+
+                } else {
+                    //If Email Is Valid
+                    //Hash Password
+                    info.password = bcryptjs.hashSync(info.password);                
+
+                    //Create user
+                    User.create(info)
+                    .then(() => {
+                        res.status(201).end();
+                    })
+                    //Catch error and check if Sequelize validation  error (not using) and pass error to next middleware
+                    .catch (err => {
+                        if (err.name === "SequelizeValidationError") {
+                            err.message = "All data must be entered";
+                            err.status = 400;
+                        } else {
+                            err.status = 400;
+                            next(err);
+                        }
+                    });
+
+
                 }
-            });
-        
-        }
+       }
     });
         
   }

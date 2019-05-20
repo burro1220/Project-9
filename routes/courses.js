@@ -6,7 +6,27 @@ const authenticate = require('./login');
 
 //GET list of Courses
 router.get('/', (req, res) => {
-    Course.findAll().then(courses => {
+    Course.findAll({
+
+         // Send only specific attributes
+        attributes: [
+            "id",
+            "title",
+            "description",
+            "estimatedTime",
+            "materialsNeeded",
+            "userId"
+      ],
+      // Include the User's information in the query
+      include: [
+        {
+          model: User,
+
+          //Only send required attributes
+          attributes: ["id", "firstName", "lastName", "emailAddress"]
+        }
+      ]
+    }).then(courses => {
 
         //Attach Course list to response
         res.json(courses);
@@ -36,6 +56,21 @@ router.get('/:id', (req, res, next) => {
         where: {
             id: info.id
         },
+         // only send needed attributes
+        attributes: [
+            "id",
+            "title",
+            "description",
+            "estimatedTime",
+            "materialsNeeded",
+            "userId"
+      ],
+      include: [
+        {
+          model: User,
+          attributes: ["id", "firstName", "lastName", "emailAddress"]
+        }
+      ]
     }).then( course => {
         if(course) {
 
@@ -64,7 +99,7 @@ router.post("/", authenticate, (req, res, next) => {
         const err = new Error('You have not entered a title for your course');
         err.status = 400;
         next(err);
-
+       
     } else {
         //Look for prexisting Course
         Course.findOne({ where: { 
@@ -114,40 +149,52 @@ router.put('/:id', authenticate, (req, res, next) => {
 
     //Grab info from request
     const info = req.body; 
-        
-    //Filter for Course by ID
-    Course.findOne({ where: {
-        id: info.id
-    }})
-    .then ( course => {
-        if (course) {
-            
-            //Update Course
-            course.update(info);
 
-        } else {
+        //Filter for Course by ID
+        Course.findOne({ where: {
+            id: info.id
+        }})
+        .then ( course => {
+
+            //If user doesn't own course
+            if (course.userId !== info.id) {
+
+                //Send error
+                const err = new Error('You can only edit your own course');
+                err.statue = 403;
+                next(err);
+                
+            } else if (course) {
+                
+                //Update Course
+                course.update(info);
+
+            } else {
+                
+                //Send error
+                const err = new Error('We can not find a Course by that ID');
+                err.status = 400;
+                next(err);
+            }
+        })
+        .then( () => {
             
-            //Send error
-            err.status(400);
-            res.json({ error: "We can not find a Course by that ID" })
-            next(err);
-        }
-    })
-    .then( () => {
-        
-        //On Success
-        console.log("Your course has been created");
-        res.status(204).end();
-    })
-    .catch(err => {
-        if (err.name === "SequelizeValidationError") {
-            err.message = "All data must be entered";
-            err.status = 400;
-        } else {
-            err.status = 400;
-            next(err);
-        } 
-    })
+            //On Success
+            console.log("Your course has been edited");
+            res.status(204).end();
+        })
+        .catch(err => {
+            if (err.name === "SequelizeValidationError") {
+                err.message = "All data must be entered";
+                err.status = 400;
+            } else {
+                err.status = 400;
+                next(err);
+            } 
+        })
+
+    
+
 });
 
 //Delete a Course
@@ -155,40 +202,49 @@ router.delete('/:id', authenticate, (req, res, next) => {
 
     //Grab info from request
     const info = req.body; 
-     console.log(info)  ;
-    //Filter for Course by ID
-    Course.findOne({ where: {
-        id: info.id
-    }})
-    .then ( course => {
-        if (course) {
-            
-            //Update Course
-            course.destroy();
 
-        } else {
+        //Filter for Course by ID
+        Course.findOne({ where: {
+            id: info.id
+        }})
+        .then ( course => {
+
+            //If user doesn't own course
+            if (course.userId !== info.id) {
+
+                //Send error
+                const err = new Error('You can only delete your own course');
+                err.statue = 403;
+                next(err);
+                
+            } else if (course) {
+                
+                //Delete Course
+                course.destroy();
+
+            } else {
+                
+                //Send error
+                const err = new Error('We can not find a Course by that ID');
+                err.status = 400;
+                next(err);
+            }
+        })
+        .then( () => {
             
-            //Send error
-            err.status(400);
-            res.json({ error: "We can not find a Course by that ID" })
-            next(err);
-        }
-    })
-    .then( () => {
-        
-        //On Success
-        console.log("Your course has been deleted");
-        res.status(204).end();
-    })
-    .catch(err => {
-        if (err.name === "SequelizeValidationError") {
-            err.message = "All data must be entered";
-            err.status = 400;
-        } else {
-            err.status = 400;
-            next(err);
-        } 
-    })
+            //On Success
+            console.log("Your course has been deleted");
+            res.status(204).end();
+        })
+        .catch(err => {
+            if (err.name === "SequelizeValidationError") {
+                err.message = "All data must be entered";
+                err.status = 400;
+            } else {
+                err.status = 400;
+                next(err);
+            } 
+        })
 });
 
 module.exports = router;
