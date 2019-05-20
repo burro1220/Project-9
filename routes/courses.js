@@ -57,43 +57,57 @@ router.get('/:id', (req, res, next) => {
 router.post("/", authenticate, (req, res, next) => {
     
     //Grab info from request
-    const info = req.body; 
+    const info = req.body;
+    
+    //If title is undefined 
+    if (!info.title) {
+        const err = new Error('You have not entered a title for your course');
+        err.status = 400;
+        next(err);
 
-    //Look for prexisting Course
-    Course.findOne({ where: { 
-            title: info.title 
-        }})
-        .then( title => {
-            if (title) {
+    } else {
+        //Look for prexisting Course
+        Course.findOne({ where: { 
+                title: info.title 
+            }})
+            .then( title => {
 
-                //Send error
-                res.json({ error: "This course already exists"});
-                res.status(400);
-            } else {
+                //if course already exists
+                if (title) {
 
-             //Set foreign key
-             info.userId = req.currentUser.id;              
-            
-             //Create Course
-            Course.create(info)
-            .then(() => {
-                console.log("Your course has been created");
-                res.status(201).end();
-            })
-            //Catch error and check if Sequelize validation  error (not using) and pass error to next middleware
-            .catch (err => {
-                if (err.name === "SequelizeValidationError") {
-                    err.message = "All data must be entered";
-                    err.status = 400;
-                } else {
+                    //Send error
+                    const err = new Error('This course already exists');
                     err.status = 400;
                     next(err);
-                }
-            });
-        
-        }
+                    
+                } else {
+
+                //Set foreign key
+                info.userId = req.currentUser.id;              
+                
+                //Create Course
+                Course.create(info)
+                .then(() => {
+                    console.log("Your course has been created");
+                    res.status(201).end();
+                })
+                //Catch error and check if Sequelize validation  error (not using) and pass error to next middleware
+                .catch (err => {
+                    if (err.name === "SequelizeValidationError") {
+                        err.message = "All data must be entered";
+                        err.status = 400;
+                    } else {
+                        err.status = 400;
+                        next(err);
+                    }
+                });
+            
+            }
+        })
+
     }
-)});
+
+});
 
 //PUT an update to a Course
 router.put('/:id', authenticate, (req, res, next) => {

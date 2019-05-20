@@ -66,5 +66,11 @@ module.exports = (req, res, next) => {
                 res.json({ message: message });
             }
         });
+    } else {
+         //If empty credentials Send error
+         const err = new Error('You have not entered the sufficient credentials');
+         err.status= 400;
+         next(err);
+
     }
 };

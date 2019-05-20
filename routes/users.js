@@ -19,24 +19,32 @@ router.get("/", authenticate, (req, res) => {
 // POST Create User
 router.post("/", (req, res, next) => {
     const info = req.body;
-    User.findOne({ where: { emailAddress: info.emailAddress }})
+        
+    //If email address is undefined 
+    if (!info.emailAddress) {
+        const err = new Error('You have not entered sufficient credentials');
+        err.status = 400;
+        next(err);
+
+    } else {
+
+        User.findOne({ where: { emailAddress: info.emailAddress }})
         .then( email => {
+            
+            //If email already exists
             if (email) {
-                res.json({ error: "This email address is already in use"});
-                res.status(400);
+
+                const err = new Error('That email address is already in use');
+                err.status = 400;
+                next(err);
+
             } else {
-                const newUserInfo = {
-                    emailAddress: info.emailAddress,
-                    firstName: info.firstName,
-                    lastName: info.lastName,
-                    password: info.password
-                };
-                
+                                
             //Hash Password
-            newUserInfo.password = bcryptjs.hashSync(newUserInfo.password);                
+            info.password = bcryptjs.hashSync(info.password);                
 
             //Create user
-            User.create(newUserInfo)
+            User.create(info)
             .then(() => {
                 res.status(201).end();
             })
@@ -52,7 +60,11 @@ router.post("/", (req, res, next) => {
             });
         
         }
-    }
-)});
+    });
+        
+  }
+    
+
+});
 
 module.exports = router;
