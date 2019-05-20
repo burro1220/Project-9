@@ -210,7 +210,7 @@ router.delete('/:id', authenticate, (req, res, next) => {
         .then ( course => {
 
             //If user doesn't own course
-            if (course.userId !== info.id) {
+            if (course.userId !== req.currentUser.id) {
 
                 //Send error
                 const err = new Error('You can only delete your own course');
