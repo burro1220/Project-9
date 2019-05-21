@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Course = require("../models").Course;
+const User = require("../models").User;
 const authenticate = require('./login');
 
 
@@ -79,10 +80,12 @@ router.get('/:id', (req, res, next) => {
 
             //Set 200 Status Code
             res.status(200);  
+
         } else {
+
             //Send error
-            err.status(400);
-            res.json({ error: "There is no course by that id"});
+            const err = new Error('There is no course by that id');
+            err.status = 400;
             next(err);
         }
     });
@@ -155,9 +158,10 @@ router.put('/:id', authenticate, (req, res, next) => {
             id: info.id
         }})
         .then ( course => {
-
+            
+            //console.log(`userId= ${course.userId} id = ${req.currentUser.id}`);
             //If user doesn't own course
-            if (course.userId !== info.id) {
+            if (course.userId !== req.currentUser.id) {
 
                 //Send error
                 const err = new Error('You can only edit your own course');
