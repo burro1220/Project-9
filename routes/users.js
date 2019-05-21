@@ -14,10 +14,11 @@ router.get("/", authenticate, (req, res) => {
       emailAddress: req.currentUser.emailAddress
     });
     res.status(200);
-    next(err);
+});
+
 
 // POST Create User
-router.post("/", authenticate, (req, res, next) => {
+router.post("/", (req, res, next) => {
     const info = req.body;
         
     //If email address is undefined 
