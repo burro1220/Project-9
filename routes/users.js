@@ -40,20 +40,7 @@ router.post("/", (req, res, next) => {
 
             } else {
 
-                //Check email validation
-                function validateEmail(email) {
-                    const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                    return regex.test(String(email).toLowerCase());
-                }
-
-                //If validation fails
-                if(!validateEmail(email)) {
-                    const err = new Error('Pleasae enter a valid email address');
-                    err.status = 400;
-                    next(err);
-
-                } else {
-                    //If Email Is Valid
+               //If Email Is Valid
                     //Hash Password
                     info.password = bcryptjs.hashSync(info.password);                
 
@@ -72,14 +59,10 @@ router.post("/", (req, res, next) => {
                             next(err);
                         }
                     });
-
-
-                }
-       }
+                } 
     });
         
-  }
-    
+  }   
 
 });
 
