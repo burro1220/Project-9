@@ -127,6 +127,7 @@ router.post("/", authenticate, (req, res, next) => {
                 Course.create(info)
                 .then(() => {
                     console.log("Your course has been created");
+                    res.location('/courses/' + course.id);
                     res.status(201).end();
                 })
                 //Catch error and check if Sequelize validation  error (not using) and pass error to next middleware
