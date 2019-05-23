@@ -218,7 +218,7 @@ router.delete('/:id', authenticate, (req, res, next) => {
 
                 //Send error
                 const err = new Error('You can only delete your own course');
-                err.statue = 403;
+                err.status = 403;
                 next(err);
                 
             } else if (course) {
