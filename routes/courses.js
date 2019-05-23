@@ -6,7 +6,7 @@ const authenticate = require('./login');
 
 
 //GET list of Courses
-router.get('/', (req, res) => {
+router.get('/', (req, res, next) => {
     Course.findAll({
 
          // Send only specific attributes
@@ -34,15 +34,14 @@ router.get('/', (req, res) => {
 
         //Set 200 Status Code
         res.status(200);
-    }).catch(err => {
 
-        if (err.name === "SequelizeValidationError") {
-            err.message = "All data must be entered";
-            err.status = 400;
-        } else {
+
+        //Catch error
+    }).catch(err => {
+        
             err.status = 400;
             next(err);
-        }
+        
     }); 
 });
 
@@ -125,9 +124,9 @@ router.post("/", authenticate, (req, res, next) => {
                 
                 //Create Course
                 Course.create(info)
-                .then(() => {
+                .then( course => {
                     console.log("Your course has been created");
-                    res.location('/courses/' + course.id);
+                    res.location('/api/courses/' + course.id);
                     res.status(201).end();
                 })
                 //Catch error and check if Sequelize validation  error (not using) and pass error to next middleware
@@ -213,7 +212,7 @@ router.delete('/:id', authenticate, (req, res, next) => {
             id: info.id
         }})
         .then ( course => {
-
+            console.log(`userId= ${course.userId} id = ${req.currentUser.id}`);
             //If user doesn't own course
             if (course.userId !== req.currentUser.id) {
 
