@@ -48,6 +48,7 @@ router.post("/", (req, res, next) => {
                     //Create user
                     User.create(info)
                     .then(() => {
+                        res.location('/');
                         res.status(201).end();
                     })
                     //Catch error and check if Sequelize validation  error (not using) and pass error to next middleware
@@ -55,6 +56,7 @@ router.post("/", (req, res, next) => {
                         if (err.name === "SequelizeValidationError") {
                             err.message = "All data must be entered";
                             err.status = 400;
+                            next(err);
                         } else {
                             err.status = 400;
                             next(err);

@@ -134,6 +134,7 @@ router.post("/", authenticate, (req, res, next) => {
                     if (err.name === "SequelizeValidationError") {
                         err.message = "All data must be entered";
                         err.status = 400;
+                        next(err);
                     } else {
                         err.status = 400;
                         next(err);
@@ -165,7 +166,7 @@ router.put('/:id', authenticate, (req, res, next) => {
 
                 //Send error
                 const err = new Error('You can only edit your own course');
-                err.statue = 403;
+                err.status = 403;
                 next(err);
                 
             } else if (course) {
@@ -191,6 +192,7 @@ router.put('/:id', authenticate, (req, res, next) => {
             if (err.name === "SequelizeValidationError") {
                 err.message = "All data must be entered";
                 err.status = 400;
+                next(err);
             } else {
                 err.status = 400;
                 next(err);
@@ -225,6 +227,8 @@ router.delete('/:id', authenticate, (req, res, next) => {
                 
                 //Delete Course
                 course.destroy();
+                console.log("Your course has been deleted");
+                res.status(204).end();
 
             } else {
                 
@@ -234,16 +238,11 @@ router.delete('/:id', authenticate, (req, res, next) => {
                 next(err);
             }
         })
-        .then( () => {
-            
-            //On Success
-            console.log("Your course has been deleted");
-            res.status(204).end();
-        })
         .catch(err => {
             if (err.name === "SequelizeValidationError") {
                 err.message = "All data must be entered";
                 err.status = 400;
+                next(err);
             } else {
                 err.status = 400;
                 next(err);
